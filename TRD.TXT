@@ -33,7 +33,7 @@ Contents
 	5.1 DSU
 	5.2 Fenwick tree
 	5.3 2D Fenwick tree
-	5.4 Segment tree (!!!!)
+	5.4 Segment tree
 	5.5 Treap (!!!)
 6. Geometry
 	6.1 Convex hull
@@ -1354,29 +1354,63 @@ int sum(int x, int y, int X, int Y) {
 
 5.4 Segment tree
 
+const int SZ = 1 << 18;
+
 struct SegTree {
-	int sz = 1;
-	vector<int> t, p;
+	int t[SZ << 1], p[SZ << 1];
 
-	void build(int n) {
-		while (sz <= n)
-			sz <<= 1;
+	void build(vector<int> &a) {
+		int n = (int)a.size();
 
+		fill(t, t + (SZ << 1), 0);
+		fill(p, p + (SZ << 1), 0);
 
-		t = vector<int> (sz << 1, 0);
-		p = vector<int> (sz << 1, 0);
+		for(int i = 0; i < n; i++)
+			t[i | SZ] = a[i];
+	
+		for(int i = SZ - 1; i > 0; i--)
+			t[i] = t[i << 1] + t[i << 1 | 1];
 	}
 
-	void push(int i, int len) {
-
+	void push(int v, int len) {
+		p[v << 1] += p[v];
+		p[v << 1 | 1] += p[v];
+		
+		t[v << 1] += p[v] * len >> 1;
+		t[v << 1 | 1] += p[v] * len >> 1;
+		
+		p[v] = 0;
 	}
 
-	void update() {
+	void update(int ql, int qr, int d, int l = 0, int r = SZ, int v = 1) {
+		if(qr <= l || r <= ql)
+			return;
 
+		if(ql <= l && r <= qr){
+			t[v] += d * (r - l);
+			p[v] += d;
+			return;
+		}
+
+		push(v, r - l);
+
+		int m = (l + r) >> 1;
+		update(ql, qr, d, l, m, v << 1);
+		update(ql, qr, d, m, r, v << 1 | 1); 
+		t[v] = t[v << 1] + t[v << 1 | 1];
 	}
 
-	int get() {
+	int get(int ql, int qr, int l = 0, int r = SZ, int v = 1) {
+		if(qr <= l || r <= ql)
+			return 0;
 
+		if(ql <= l && r <= qr)
+			return t[v];
+
+		push(v, r - l);
+
+		int m = (l + r) >> 1;
+		return get(ql, qr, l, m, v << 1) + get(ql, qr, m, r, v << 1 | 1);
 	}
 };
 
