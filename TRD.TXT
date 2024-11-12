@@ -33,13 +33,17 @@ Contents
 	5.1 DSU
 	5.2 Fenwick tree
 	5.3 2D Fenwick tree
-	5.4 Segment tree
+	5.4 Segment tree (!!!!)
 	5.5 Treap (!!!)
 6. Geometry
 	6.1 Convex hull
 	6.2 
 	6.3 
 	6.4 
+7. Strings
+	7.1 String hashing
+	7.2 Z-function
+	7.3 Prefix function
 
 ------------------------------------------------
 
@@ -1354,63 +1358,29 @@ int sum(int x, int y, int X, int Y) {
 
 5.4 Segment tree
 
-const int SZ = 1 << 18;
-
 struct SegTree {
-	int t[SZ << 1], p[SZ << 1];
+	int sz = 1;
+	vector<int> t, p;
 
-	void build(vector<int> &a) {
-		int n = (int)a.size();
+	void build(int n) {
+		while (sz <= n)
+			sz <<= 1;
 
-		fill(t, t + (SZ << 1), 0);
-		fill(p, p + (SZ << 1), 0);
 
-		for(int i = 0; i < n; i++)
-			t[i | SZ] = a[i];
-	
-		for(int i = SZ - 1; i > 0; i--)
-			t[i] = t[i << 1] + t[i << 1 | 1];
+		t = vector<int> (sz << 1, 0);
+		p = vector<int> (sz << 1, 0);
 	}
 
-	void push(int v, int len) {
-		p[v << 1] += p[v];
-		p[v << 1 | 1] += p[v];
-		
-		t[v << 1] += p[v] * len >> 1;
-		t[v << 1 | 1] += p[v] * len >> 1;
-		
-		p[v] = 0;
+	void push(int i, int len) {
+
 	}
 
-	void update(int ql, int qr, int d, int l = 0, int r = SZ, int v = 1) {
-		if(qr <= l || r <= ql)
-			return;
+	void update() {
 
-		if(ql <= l && r <= qr){
-			t[v] += d * (r - l);
-			p[v] += d;
-			return;
-		}
-
-		push(v, r - l);
-
-		int m = (l + r) >> 1;
-		update(ql, qr, d, l, m, v << 1);
-		update(ql, qr, d, m, r, v << 1 | 1); 
-		t[v] = t[v << 1] + t[v << 1 | 1];
 	}
 
-	int get(int ql, int qr, int l = 0, int r = SZ, int v = 1) {
-		if(qr <= l || r <= ql)
-			return 0;
+	int get() {
 
-		if(ql <= l && r <= qr)
-			return t[v];
-
-		push(v, r - l);
-
-		int m = (l + r) >> 1;
-		return get(ql, qr, l, m, v << 1) + get(ql, qr, m, r, v << 1 | 1);
 	}
 };
 
@@ -1458,4 +1428,92 @@ vector<Point> convex_hull(vector<Point> &a) {
 	up.insert(up.end(), dw.begin(), dw.end());
  
 	return up;
+}
+
+------------------------------------------------
+
+7. Strings
+
+7.1 String hashing
+
+struct num {
+    static const int MA = 1e9 + 7, MB = 1e9 + 9;
+    int a, b;
+
+    num() { }
+    num( int x ) : a(x), b(x) { }
+    num( int aa, int bb ) : a(aa), b(bb) { }
+
+    num operator + ( const num &x ) const { return num((a + x.a) % MA, (b + x.b) % MB); }
+    num operator - ( const num &x ) const { return num((a + MA - x.a) % MA, (b + MB - x.b) % MB); }
+    num operator * ( int x ) const { return num(((ll)a * x) % MA, ((ll)b * x) % MB); }
+    num operator * ( const num &x ) const { return num(((ll)a * x.a) % MA, ((ll)b * x.b) % MB); }
+    bool operator == ( const num &x ) const { return a == x.a && b == x.b; }
+
+    explicit operator ll () const { return (ll)a * MB + b + 1; } // > 0
+};
+
+/* Usage:
+    StrComparator<num> h1(n, s);
+    h1.substr(i, len);
+*/
+template <class hash_t>
+struct StrComparator {
+    static const int P;
+    static vector<hash_t> deg;
+
+    int n;
+    string s;
+    hash_t *h;
+
+    StrComparator( int nn, string ss ) : n(nn), s(ss) {
+        h = new hash_t[n + 1];
+        h[0] = 0;
+        for(int i = 0; i < n; i++)
+            h[i + 1] = h[i] * P + s[i];
+        deg.reserve(n);
+        while (sz(deg) <= n)
+            deg.push_back(*deg.rbegin() * P);
+    }
+
+    hash_t substr( int i, int len ) const { return h[i + len] - h[i] * deg[len]; }
+};
+template <class hash_t> vector <hash_t> StrComparator<hash_t>::deg(1, hash_t(1));
+template <class hash_t> const int StrComparator<hash_t>::P = max(239, rand());
+
+------------------------
+
+7.2 Z-function
+
+vector<int> z_function(string s) {
+    int n = s.size();
+    vector<int> z(n);
+    int l = 0, r = 0;
+    for(int i = 1; i < n; i++) {
+        if(i < r)
+            z[i] = min(r - i, z[i - l]);
+        while(i + z[i] < n && s[z[i]] == s[i + z[i]])
+            z[i]++;
+        if(i + z[i] > r)
+            l = i, r = i + z[i];
+    }
+    return z;
+}
+
+------------------------
+
+7.3 Prefix function
+
+vector<int> prefix_function(string s) {
+    int n = (int)s.length();
+    vector<int> pi(n);
+    for (int i = 1; i < n; i++) {
+        int j = pi[i-1];
+        while (j > 0 && s[i] != s[j])
+            j = pi[j-1];
+        if (s[i] == s[j])
+            j++;
+        pi[i] = j;
+    }
+    return pi;
 }
