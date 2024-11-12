@@ -24,11 +24,15 @@ Contents
 	3.2 Minimal cut
 	3.3 Mincost flow
 4. Math
-	4.1 TODO!!!!
+	4.0 TODO!!!
+	4.1 Modulo arithemitcs
 	4.2 Euler's function
 	4.3 FFT (modulo/complex)
 	4.4 Linear Sieve
 	4.5 Game theory
+	4.6 Diofant
+	4.7 Burnside lemma
+	4.8 Catalan numbers
 5. Data Structures
 	5.1 DSU
 	5.2 Fenwick tree
@@ -36,6 +40,7 @@ Contents
 	5.4 Segment tree
 	5.5 Treap (!!!)
 6. Geometry
+	6.0 Geometry functions
 	6.1 Convex hull
 	6.2 Geometry template
 7. Strings
@@ -89,6 +94,14 @@ Resize + push_back нельзя!!
 Очередь на стеках с любой (без обратных операций)
 Сжать граф
 Что-то делать с простыми - их не так много, запомнить разложения и с ними что-то сделать
+
+Инварианты
+Бить задачу на подзадачи
+Выделять интересные факты (все что можно)
+Прокручивать в голове ход мыслей, использовать факты о задаче
+Доверяй, но проверяй
+
+Выделить виды тестов => особенные виды ввода и вывода?
 
 ------------------------
 
@@ -963,7 +976,33 @@ int main() {
 
 4. Math
 
-4.1 TODO!!!!
+4.0 TODO!!!!
+
+------------------------
+
+4.1 Modulo arithemitcs
+
+const ll MOD = 1e9 + 7;
+
+inline ll binpow(const ll a, const ll p)
+{
+    if(p == 0)
+        return 1;
+    if(p == 1)
+        return a;
+ 
+    ll b = binpow(a, p >> 1);
+ 
+    if(p & 1)
+        return b * b % MOD * a % MOD;
+    else
+        return b * b % MOD;
+}
+ 
+inline ll inv(const ll num)
+{
+    return binpow(num, MOD-2);
+}
 
 ------------------------
 
@@ -1249,7 +1288,95 @@ g(A) = mex{g(A1), g(A2), ... , g(An)}
 
 Сумма игр: ∗i + ∗j ~ ∗(i ^ j).
 
-------------------------------------------------
+------------------------
+
+4.6 Diofant
+
+a * x + b * y = c
+
+! a = b = 0 - special case
+
+int gcd (int a, int b, int & x, int & y) {
+	if (a == 0) {
+		x = 0; y = 1;
+		return b;
+	}
+	int x1, y1;
+	int d = gcd (b%a, a, x1, y1);
+	x = y1 - (b / a) * x1;
+	y = x1;
+	return d;
+}
+ 
+bool find_any_solution (int a, int b, int c, int & x0, int & y0, int & g) {
+	g = gcd (abs(a), abs(b), x0, y0);
+	if (c % g != 0)
+		return false;
+	x0 *= c / g;
+	y0 *= c / g;
+	if (a < 0)   x0 *= -1;
+	if (b < 0)   y0 *= -1;
+	return true;
+}
+
+void find_next_solution(int a, int b, int x0, int y0, int g, int& x, int& y)
+{
+	x = x0 + b / g;
+	y = y0 - a / g;
+}
+
+-----------------------
+
+4.7 Burnside lemma
+
+Необходимо посчитать количество классов эквивалентности
+
+Есть группа G (операции, действия), действующая на множество X (элементы).
+
+Неподвижная точка для g - такое x что: g * x = x
+Множество неподвижных точек для g - I(g)
+
+Два элемента x и y эквивалентны, если x = gy для некоторого g
+
+Лемма Бернсайда:
+Количество классов эквивалентности = (1 / |G|) * sum_{g in G} I(g)
+
+Теорема Пойя:
+
+I(g) = k ^ C(g)
+k - множество значений элемента
+C(g) - количество циклов в перестановке
+
+Количество классов эквивалентности = (1 / |G|) * sum_{g in G} k ^ C(g)
+
+Пример: ожерелья
+Есть ожерелье длины n, каждая бусинка имеет один из m цветов. Ожерелья одинаковые, если одно можно получить из другого, циклически сдвинув другое.
+
+В данном случае G = перестановка 1, 2, ..., n ; сдвинутая на все i влево
+Их n
+
+Тогда C(g) = gcd(n, i) - количество циклов в перестановке со сдвигом i
+
+Решение:
+
+n - длина, m - цвета
+
+ll ans = 0;
+
+for(int i = 0; i < n; i++)
+    ans = (ans + binpow(m, gcd(n, i))) % MOD;
+ 
+cout << ans * inv(n) % MOD;
+
+-----------------------------
+
+4.8 Catalan numbers
+
+1, 1, 2, 5, 14, 42, 132...
+
+C_n = 1 / (n + 1) * C^n_{2n}
+
+--------------------------------------------
 
 5. Data Structures
 
@@ -1430,6 +1557,14 @@ struct SegTree {
 ------------------------------------------------
 
 6. Geometry
+
+6.0 Geometry functions
+
+hypot(x, y) => Евклидово расстояние до точки (x, y) (высокая точность!)
+
+atan2(y, x) => arctan(y / x) в [-pi, pi]
+
+----------------------------
 
 6.1 Convex hull
 
