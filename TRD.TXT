@@ -25,8 +25,7 @@ Contents
 	3.2 Minimal cut
 	3.3 Mincost flow
 4. Math
-	4.0 TODO!!!
-	4.1 Modulo arithemitcs
+	4.1 Modulo arithmetics
 	4.2 Euler's function
 	4.3 FFT (modulo/complex)
 	4.4 Linear Sieve
@@ -34,12 +33,14 @@ Contents
 	4.6 Diofant
 	4.7 Burnside lemma
 	4.8 Catalan numbers
+	4.9 Stirling numbers
+	4.10 Formulas++
+	4.11 Pythagorean triples
 5. Data Structures
 	5.1 DSU
 	5.2 Fenwick tree
 	5.3 2D Fenwick tree
 	5.4 Segment tree
-	5.5 Treap (!!!)
 6. Geometry
 	6.0 Geometry functions
 	6.1 Convex hull
@@ -333,146 +334,146 @@ cout << X.order_of_key(400) << endl; // 5
 1.10 Fast input-output
 
 namespace fastio {
-    static constexpr int SZ = 1 << 17;
-    char inbuf[SZ], outbuf[SZ];
-    int in_left = 0, in_right = 0, out_right = 0;
+	static constexpr int SZ = 1 << 17;
+	char inbuf[SZ], outbuf[SZ];
+	int in_left = 0, in_right = 0, out_right = 0;
  
-    struct Pre {
-        char num[40000];
-        constexpr Pre() : num() {
-            for (int i = 0; i < 10000; i++) {
-                int n = i;
-                for (int j = 3; j >= 0; j--) {
-                    num[i * 4 + j] = n % 10 + '0';
-                    n /= 10;
-                }
-            }
-        }
-    } constexpr pre;
+	struct Pre {
+		char num[40000];
+		constexpr Pre() : num() {
+			for (int i = 0; i < 10000; i++) {
+				int n = i;
+				for (int j = 3; j >= 0; j--) {
+					num[i * 4 + j] = n % 10 + '0';
+					n /= 10;
+				}
+			}
+		}
+	} constexpr pre;
  
-    inline void load() {
-        int len = in_right - in_left;
-        memcpy(inbuf, inbuf + in_left, len);
-        in_right = len + fread(inbuf + len, 1, SZ - len, stdin);
-        in_left = 0;
-    }
+	inline void load() {
+		int len = in_right - in_left;
+		memcpy(inbuf, inbuf + in_left, len);
+		in_right = len + fread(inbuf + len, 1, SZ - len, stdin);
+		in_left = 0;
+	}
  
-    inline void flush() {
-        fwrite(outbuf, 1, out_right, stdout);
-        out_right = 0;
-    }
+	inline void flush() {
+		fwrite(outbuf, 1, out_right, stdout);
+		out_right = 0;
+	}
  
-    inline void skip_space() {
-        if (in_left + 32 > in_right)
-            load();
-        while (inbuf[in_left] <= ' ')
-            in_left++;
-    }
+	inline void skip_space() {
+		if (in_left + 32 > in_right)
+			load();
+		while (inbuf[in_left] <= ' ')
+			in_left++;
+	}
  
-    inline void rd(char& c) {
-        if (in_left + 32 > in_right)
-            load();
-        c = inbuf[in_left++];
-    }
-    template <typename T>
-    inline void rd(T& x) {
-        if (in_left + 32 > in_right)
-            load();
-        char c;
-        do
-            c = inbuf[in_left++];
-        while (c < '-');
-        [[maybe_unused]] bool minus = false;
-        if constexpr (is_signed<T>::value == true) {
-            if (c == '-')
-                minus = true, c = inbuf[in_left++];
-        }
-        x = 0;
-        while (c >= '0') {
-            x = x * 10 + (c & 15);
-            c = inbuf[in_left++];
-        }
-        if constexpr (is_signed<T>::value == true) {
-            if (minus)
-                x = -x;
-        }
-    }
-    inline void rd() {}
-    template <typename Head, typename... Tail>
-    inline void rd(Head& head, Tail&... tail) {
-        rd(head);
-        rd(tail...);
-    }
+	inline void rd(char& c) {
+		if (in_left + 32 > in_right)
+			load();
+		c = inbuf[in_left++];
+	}
+	template <typename T>
+	inline void rd(T& x) {
+		if (in_left + 32 > in_right)
+			load();
+		char c;
+		do
+			c = inbuf[in_left++];
+		while (c < '-');
+		[[maybe_unused]] bool minus = false;
+		if constexpr (is_signed<T>::value == true) {
+			if (c == '-')
+				minus = true, c = inbuf[in_left++];
+		}
+		x = 0;
+		while (c >= '0') {
+			x = x * 10 + (c & 15);
+			c = inbuf[in_left++];
+		}
+		if constexpr (is_signed<T>::value == true) {
+			if (minus)
+				x = -x;
+		}
+	}
+	inline void rd() {}
+	template <typename Head, typename... Tail>
+	inline void rd(Head& head, Tail&... tail) {
+		rd(head);
+		rd(tail...);
+	}
  
-    inline void wt(char c) {
-        if (out_right > SZ - 32)
-            flush();
-        outbuf[out_right++] = c;
-    }
-    inline void wt(bool b) {
-        if (out_right > SZ - 32)
-            flush();
-        outbuf[out_right++] = b ? '1' : '0';
-    }
-    template <typename T>
-    inline void wt(T x) {
-        if (out_right > SZ - 32)
-            flush();
-        if (!x) {
-            outbuf[out_right++] = '0';
-            return;
-        }
-        if constexpr (is_signed<T>::value == true) {
-            if (x < 0)
-                outbuf[out_right++] = '-', x = -x;
-        }
-        int i = 12;
-        char buf[16];
-        while (x >= 10000) {
-            memcpy(buf + i, pre.num + (x % 10000) * 4, 4);
-            x /= 10000;
-            i -= 4;
-        }
-        if (x < 100) {
-            if (x < 10) {
-                outbuf[out_right] = '0' + x;
-                ++out_right;
-            } else {
-                uint32_t q = (uint32_t(x) * 205) >> 11;
-                uint32_t r = uint32_t(x) - q * 10;
-                outbuf[out_right] = '0' + q;
-                outbuf[out_right + 1] = '0' + r;
-                out_right += 2;
-            }
-        } else {
-            if (x < 1000) {
-                memcpy(outbuf + out_right, pre.num + (x << 2) + 1, 3);
-                out_right += 3;
-            } else {
-                memcpy(outbuf + out_right, pre.num + (x << 2), 4);
-                out_right += 4;
-            }
-        }
-        memcpy(outbuf + out_right, buf + i + 4, 12 - i);
-        out_right += 12 - i;
-    }
+	inline void wt(char c) {
+		if (out_right > SZ - 32)
+			flush();
+		outbuf[out_right++] = c;
+	}
+	inline void wt(bool b) {
+		if (out_right > SZ - 32)
+			flush();
+		outbuf[out_right++] = b ? '1' : '0';
+	}
+	template <typename T>
+	inline void wt(T x) {
+		if (out_right > SZ - 32)
+			flush();
+		if (!x) {
+			outbuf[out_right++] = '0';
+			return;
+		}
+		if constexpr (is_signed<T>::value == true) {
+			if (x < 0)
+				outbuf[out_right++] = '-', x = -x;
+		}
+		int i = 12;
+		char buf[16];
+		while (x >= 10000) {
+			memcpy(buf + i, pre.num + (x % 10000) * 4, 4);
+			x /= 10000;
+			i -= 4;
+		}
+		if (x < 100) {
+			if (x < 10) {
+				outbuf[out_right] = '0' + x;
+				++out_right;
+			} else {
+				uint32_t q = (uint32_t(x) * 205) >> 11;
+				uint32_t r = uint32_t(x) - q * 10;
+				outbuf[out_right] = '0' + q;
+				outbuf[out_right + 1] = '0' + r;
+				out_right += 2;
+			}
+		} else {
+			if (x < 1000) {
+				memcpy(outbuf + out_right, pre.num + (x << 2) + 1, 3);
+				out_right += 3;
+			} else {
+				memcpy(outbuf + out_right, pre.num + (x << 2), 4);
+				out_right += 4;
+			}
+		}
+		memcpy(outbuf + out_right, buf + i + 4, 12 - i);
+		out_right += 12 - i;
+	}
  
-    inline void wt() {}
-    template <typename Head, typename... Tail>
-    inline void wt(Head&& head, Tail&&... tail) {
-        wt(head);
-        wt(forward<Tail>(tail)...);
-    }
+	inline void wt() {}
+	template <typename Head, typename... Tail>
+	inline void wt(Head&& head, Tail&&... tail) {
+		wt(head);
+		wt(forward<Tail>(tail)...);
+	}
  
-    template <typename... Args>
-    inline void wtn(Args&&... x) {
-        wt(forward<Args>(x)...);
-        wt('\n');
-    }
+	template <typename... Args>
+	inline void wtn(Args&&... x) {
+		wt(forward<Args>(x)...);
+		wt('\n');
+	}
  
-    struct Dummy {
-        Dummy() { atexit(flush); }
-    } dummy;
+	struct Dummy {
+		Dummy() { atexit(flush); }
+	} dummy;
 }  // namespace fastio
 
 ------------------------
@@ -486,18 +487,18 @@ _, f1, f2, gen, iters = sys.argv
 # поэтому "забудем" его с помощью "_"
 
 for i in range(int(iters)):
-    print('Test', i + 1)
-    os.system(f'python3 {gen} > test.txt')
-    v1 = os.popen(f'./{f1} < test.txt').read()
-    v2 = os.popen(f'./{f2} < test.txt').read()
-    if v1 != v2:
-        print("Failed test:")
-        print(open("test.txt").read())
-        print(f'Output of {f1}:')
-        print(v1)
-        print(f'Output of {f2}:')
-        print(v2)
-        break
+	print('Test', i + 1)
+	os.system(f'python3 {gen} > test.txt')
+	v1 = os.popen(f'./{f1} < test.txt').read()
+	v2 = os.popen(f'./{f2} < test.txt').read()
+	if v1 != v2:
+		print("Failed test:")
+		print(open("test.txt").read())
+		print(f'Output of {f1}:')
+		print(v1)
+		print(f'Output of {f2}:')
+		print(v2)
+		break
 
 ------------------------------------------------
 
@@ -1002,32 +1003,28 @@ int main() {
 
 4. Math
 
-4.0 TODO!!!!
-
-------------------------
-
-4.1 Modulo arithemitcs
+4.1 Modulo arithmetics
 
 const ll MOD = 1e9 + 7;
 
 inline ll binpow(const ll a, const ll p)
 {
-    if(p == 0)
-        return 1;
-    if(p == 1)
-        return a;
+	if(p == 0)
+		return 1;
+	if(p == 1)
+		return a;
  
-    ll b = binpow(a, p >> 1);
+	ll b = binpow(a, p >> 1);
  
-    if(p & 1)
-        return b * b % MOD * a % MOD;
-    else
-        return b * b % MOD;
+	if(p & 1)
+		return b * b % MOD * a % MOD;
+	else
+		return b * b % MOD;
 }
  
 inline ll inv(const ll num)
 {
-    return binpow(num, MOD-2);
+	return binpow(num, MOD-2);
 }
 
 ------------------------
@@ -1291,16 +1288,16 @@ vector<int> lp(N+1);
 vector<int> pr;
 
 for (int i = 2; i <= N; ++i) {
-    if (lp[i] == 0) {
-        lp[i] = i;
-        pr.push_back(i);
-    }
-    for (int j = 0; i * pr[j] <= N; ++j) {
-        lp[i * pr[j]] = pr[j];
-        if (pr[j] == lp[i]) {
-            break;
-        }
-    }
+	if (lp[i] == 0) {
+		lp[i] = i;
+		pr.push_back(i);
+	}
+	for (int j = 0; i * pr[j] <= N; ++j) {
+		lp[i * pr[j]] = pr[j];
+		if (pr[j] == lp[i]) {
+			break;
+		}
+	}
 }
 
 ------------------------
@@ -1390,7 +1387,7 @@ n - длина, m - цвета
 ll ans = 0;
 
 for(int i = 0; i < n; i++)
-    ans = (ans + binpow(m, gcd(n, i))) % MOD;
+	ans = (ans + binpow(m, gcd(n, i))) % MOD;
  
 cout << ans * inv(n) % MOD;
 
@@ -1401,6 +1398,90 @@ cout << ans * inv(n) % MOD;
 1, 1, 2, 5, 14, 42, 132...
 
 C_n = 1 / (n + 1) * C^n_{2n}
+
+n-th Catalan number is:
+	number of binary trees with n+1 unnumbered leaves
+	number of triangulations of convex n+2 polygon
+	number of connections 2n points on a circle with non-intersected chords
+	number of non-isomorphic full binary trees with n vertices interior (that have at least one son)
+	number of permutations of length n, which can be sorted by stack (not such indexes: i < j < k and a_k < a_i < a_j)
+	number of continuous partitions of set of n elements
+	number of covering n-ladder with n rectangles
+
+-----------------------------
+
+4.9 Stirling numbers
+
+I. Number of permutations length n with k cycles
+
+| s[n,k] | = | s[n-1,k-1] | + (n - 1) * | s[n-1,k] |
+s[n,1] = s[n,n] = 1
+
+II. The number of ways to partition a set of n objects into k non-empty subsets.
+
+| S[n,k] | = | S[n-1,k-1] | + k * | S[n-1,k] |
+
+S[n,k] = 1 / k! * sum(j=0..k, (-1)^(k-j) * C[k,j] * j^n)
+
+-----------------------------
+
+4.10 Formulas++
+
+Количество остовных деревьев в полном графе: n^(n - 2)
+Перебор подмасок: s = (s - 1) & m
+Код Грея: n ^ (n >> 1)
+
+Пусть p - простое число. Тогда (p - 1)! ≡ -1 mod p
+
+The radius of circumscribed circle of triangle
+R = a * b * c / (4 * S)
+
+The radius of circumscribed circle of regular polygon
+R = a / (2 * sin(180 / n))
+
+The radius of inscribed circle of triangle
+R = S / p, p - half-perimeter
+
+Geometric progression:
+b_n = b_1 * q^(n-1)
+S_n = b_1 * (1 - q^n) / (1 - q) -- if q != 1
+S = b_1 / (1 - q) -- if |q| < 1
+
+Pick's formula:
+S = interior + boundary / 2 - 1
+
+Binomial coefficients:
+C[k,n] = C[k-1,n-1] + C[k,n-1]
+C[k,n] = n / k * C[k-1,n-1]
+C[0,n]^2 + C[1,n]^2 + ... + C[n,n]^2 = C[n,2n]
+1*C[1,n] + 2*C[2,n] + ... + n*C[n,n] = n * 2^(n-1)
+C[0,n] + C[1,n-1] + ... + C[n,0] = F[n+1]
+
+Bell numbers:
+B[n+1] = sum(k=0..n, C[n,k] * B[k]) = sum(k=1..n, S[n,k])
+
+Sums of the series:
+sum(k=0..n, k^2) = n * (n + 1) * (2n + 1) / 6
+sum(k=0..n, k^3) = (n * (n + 1))^2 / 4
+
+-----------------------------
+
+4.11 Pythagorean triples
+
+Примитивные тройки:
+a = m^2-n^2
+b = 2mn
+c = m^2+n^2
+
+Все тройки:
+a = k * (m^2-n^2)
+b = k * 2mn
+c = k * (m^2+n^2)
+
+m, n, k - натуральные числа
+m > n
+m - n - нечётно
+gcd(m, n) = 1
 
 --------------------------------------------
 
@@ -1645,189 +1726,189 @@ const double eps = 1e-7;
 double pi = acos(-1);
 
 struct Line{
-    double a, b, c;
-    Point v;
-    Line (double A, double B, double C) : a(A), b(B), c(C) {
-        double len = Point(a, b).len;
-        a /= len; b /= len; c /= len;
+	double a, b, c;
+	Point v;
+	Line (double A, double B, double C) : a(A), b(B), c(C) {
+		double len = Point(a, b).len;
+		a /= len; b /= len; c /= len;
 
-        if (a < 0 || a == 0 && b < 0){
-            a *= -1; b *= -1; c *= -1;
-        }
+		if (a < 0 || a == 0 && b < 0){
+			a *= -1; b *= -1; c *= -1;
+		}
 
-        v = Point(-b, a);
-    }
+		v = Point(-b, a);
+	}
 
-    Line (const Point& p, const Point& q){
-        a = p.y - q.y;
-        b = q.x - p.x;
-        c = -(p.x*a + p.y*b);
-        *this = Line(a, b, c);
-    }
+	Line (const Point& p, const Point& q){
+		a = p.y - q.y;
+		b = q.x - p.x;
+		c = -(p.x*a + p.y*b);
+		*this = Line(a, b, c);
+	}
 
-    Line (){}
+	Line (){}
 
-    double distance(const Point& p) const {
-        return abs(a*p.x + b*p.y + c);
-    }
+	double distance(const Point& p) const {
+		return abs(a*p.x + b*p.y + c);
+	}
 
-    double vect(const Point& p) const {
-        return a*p.x + b*p.y + c;
-    }
+	double vect(const Point& p) const {
+		return a*p.x + b*p.y + c;
+	}
 };
 
 pair<int, Point> intersect(const Line& l, const Line& m){
-    double z = l.a * m.b - l.b * m.a;
-    if (z == 0){
-        if (l.c == m.c){
-            return {1, Point()};
-        }
-        return {-1, Point()};
-    }
+	double z = l.a * m.b - l.b * m.a;
+	if (z == 0){
+		if (l.c == m.c){
+			return {1, Point()};
+		}
+		return {-1, Point()};
+	}
 
-    double x = -(l.c * m.b - l.b * m.c) / z;
-    double y = -(l.a * m.c - l.c * m.a) / z;
-    return {0, Point(x, y)};
+	double x = -(l.c * m.b - l.b * m.c) / z;
+	double y = -(l.a * m.c - l.c * m.a) / z;
+	return {0, Point(x, y)};
 }
 
 struct Beam {
-    Line l;
-    Point v;
-    Point b;
-    Beam (const Point& p, const Point& q) : b(p), v(q), l(p, q){}
-    Beam (){}
+	Line l;
+	Point v;
+	Point b;
+	Beam (const Point& p, const Point& q) : b(p), v(q), l(p, q){}
+	Beam (){}
 
-    double distance(const Point& p) const {
-        if (scal(v - b, p - b) < 0){
-            return sqrt(dst_2(b, p));
-        }
-        return l.distance(p);
-    }
+	double distance(const Point& p) const {
+		if (scal(v - b, p - b) < 0){
+			return sqrt(dst_2(b, p));
+		}
+		return l.distance(p);
+	}
 
-    bool in_sector(const Point& p) const {
-        return scal(v - b, p - b) > -eps;
-    }
+	bool in_sector(const Point& p) const {
+		return scal(v - b, p - b) > -eps;
+	}
 };
 
 double distance(const Beam& a, const Beam& b){
-    const auto& res = intersect(a.l, b.l);
-    if (res.first == 0){
-        const Point& p = res.second;
-        // cout << p << endl;
-        if (a.in_sector(p) && b.in_sector(p)){
-            return 0;
-        }
-    }
+	const auto& res = intersect(a.l, b.l);
+	if (res.first == 0){
+		const Point& p = res.second;
+		// cout << p << endl;
+		if (a.in_sector(p) && b.in_sector(p)){
+			return 0;
+		}
+	}
 
-    return min(a.distance(b.b), b.distance(a.b));
+	return min(a.distance(b.b), b.distance(a.b));
 }
 
 struct Segment {
-    Point p, q;
-    Beam b1, b2;
-    Line l;
-    Segment (Point p, Point q) : p(min(p, q)), q(max(p, q)), b1(p, q), b2(q, p), l(p, q) {}
-    Segment () {}
-    
-    double distance(const Point& p) const {
-        return max(b1.distance(p), b2.distance(p));
-    }
+	Point p, q;
+	Beam b1, b2;
+	Line l;
+	Segment (Point p, Point q) : p(min(p, q)), q(max(p, q)), b1(p, q), b2(q, p), l(p, q) {}
+	Segment () {}
+	
+	double distance(const Point& p) const {
+		return max(b1.distance(p), b2.distance(p));
+	}
 
-    bool in_sector(const Point& p) const {
-        return b1.in_sector(p) && b2.in_sector(p);
-    }
+	bool in_sector(const Point& p) const {
+		return b1.in_sector(p) && b2.in_sector(p);
+	}
 };
 
 double distance(const Segment& s, const Segment& t){
-    const auto& res = intersect(s.l, t.l);
-    if (res.first == 0){
-        const Point& p = res.second;
-        if (s.in_sector(p) && t.in_sector(p)){
-            return 0;
-        }
-    }
+	const auto& res = intersect(s.l, t.l);
+	if (res.first == 0){
+		const Point& p = res.second;
+		if (s.in_sector(p) && t.in_sector(p)){
+			return 0;
+		}
+	}
 
-    return min(
-        min(s.distance(t.p), s.distance(t.q)),
-        min(t.distance(s.p), t.distance(s.q))
-    );
+	return min(
+		min(s.distance(t.p), s.distance(t.q)),
+		min(t.distance(s.p), t.distance(s.q))
+	);
 }
 
 struct Circle {
-    Point c;
-    double r;
-    double rr;
+	Point c;
+	double r;
+	double rr;
 
-    Circle () {}
-    Circle (const Point& C, double R) : c(C), r(R), rr(R * R) {}
+	Circle () {}
+	Circle (const Point& C, double R) : c(C), r(R), rr(R * R) {}
 
-    double distance_center_2(const Point& p){
-        return distance_2(c, p);
-    }
+	double distance_center_2(const Point& p){
+		return distance_2(c, p);
+	}
 
-    int point_position(const Point& p){
-        double d = distance_center_2(p);
-        if (d < rr - eps){
-            return 1;
-        }
-        if (d < rr + eps){
-            return 0;
-        }
-        return -1;
-    }
+	int point_position(const Point& p){
+		double d = distance_center_2(p);
+		if (d < rr - eps){
+			return 1;
+		}
+		if (d < rr + eps){
+			return 0;
+		}
+		return -1;
+	}
 
-    pair<int, pair<Point, Point>> tangent(const Point& p){
-        if (point_position(p) == 1){
-            return {0, {Point(), Point()}};
-        }
+	pair<int, pair<Point, Point>> tangent(const Point& p){
+		if (point_position(p) == 1){
+			return {0, {Point(), Point()}};
+		}
 
-        if (point_position(p) == 0){
-            return {1, {Point(), Point()}};
-        }
+		if (point_position(p) == 0){
+			return {1, {Point(), Point()}};
+		}
 
-        double cq = r;
-        double cp = distance(c, p);
-        double pq = sqrt(cp*cp - cq*cq);
+		double cq = r;
+		double cp = distance(c, p);
+		double pq = sqrt(cp*cp - cq*cq);
 
-        double sp = pq * pq / cp;
-        double sq = cq * pq / cp;
+		double sp = pq * pq / cp;
+		double sq = cq * pq / cp;
 
-        Point SP = (c - p) * (sp / cp);
-        Point SQ = SP.rotate(pi / 2) * (sq / SP.len);
+		Point SP = (c - p) * (sp / cp);
+		Point SQ = SP.rotate(pi / 2) * (sq / SP.len);
 
-        return {2, {SP, SQ}};
-    }
+		return {2, {SP, SQ}};
+	}
 };
 
 void solve(){
 
-    Point p, o;
-    double r;
-    cin >> o >> r >> p;
+	Point p, o;
+	double r;
+	cin >> o >> r >> p;
 
-    Circle c(o, r);
+	Circle c(o, r);
 
-    auto res = c.tangent(p);
+	auto res = c.tangent(p);
 
-    cout << res.first << '\n';
+	cout << res.first << '\n';
 
-    if (res.first == 0){
-        return;
-    }
+	if (res.first == 0){
+		return;
+	}
 
-    if (res.first == 1){
-        cout << p;
-        return;
-    }
+	if (res.first == 1){
+		cout << p;
+		return;
+	}
 
-    const Point& v = res.second.first;
-    const Point& u = res.second.second;
+	const Point& v = res.second.first;
+	const Point& u = res.second.second;
 
-    cout << p + v << '\n';
+	cout << p + v << '\n';
 
-    cout << v.len << ' ' << u.len << '\n';
+	cout << v.len << ' ' << u.len << '\n';
 
-    cout << p + v + u.rotate(pi) << '\n' << p + v + u;
+	cout << p + v + u.rotate(pi) << '\n' << p + v + u;
 }
 
 ------------------------------------------------
@@ -1837,46 +1918,46 @@ void solve(){
 7.1 String hashing
 
 struct num {
-    static const int MA = 1e9 + 7, MB = 1e9 + 9;
-    int a, b;
+	static const int MA = 1e9 + 7, MB = 1e9 + 9;
+	int a, b;
 
-    num() { }
-    num( int x ) : a(x), b(x) { }
-    num( int aa, int bb ) : a(aa), b(bb) { }
+	num() { }
+	num( int x ) : a(x), b(x) { }
+	num( int aa, int bb ) : a(aa), b(bb) { }
 
-    num operator + ( const num &x ) const { return num((a + x.a) % MA, (b + x.b) % MB); }
-    num operator - ( const num &x ) const { return num((a + MA - x.a) % MA, (b + MB - x.b) % MB); }
-    num operator * ( int x ) const { return num(((ll)a * x) % MA, ((ll)b * x) % MB); }
-    num operator * ( const num &x ) const { return num(((ll)a * x.a) % MA, ((ll)b * x.b) % MB); }
-    bool operator == ( const num &x ) const { return a == x.a && b == x.b; }
+	num operator + ( const num &x ) const { return num((a + x.a) % MA, (b + x.b) % MB); }
+	num operator - ( const num &x ) const { return num((a + MA - x.a) % MA, (b + MB - x.b) % MB); }
+	num operator * ( int x ) const { return num(((ll)a * x) % MA, ((ll)b * x) % MB); }
+	num operator * ( const num &x ) const { return num(((ll)a * x.a) % MA, ((ll)b * x.b) % MB); }
+	bool operator == ( const num &x ) const { return a == x.a && b == x.b; }
 
-    explicit operator ll () const { return (ll)a * MB + b + 1; } // > 0
+	explicit operator ll () const { return (ll)a * MB + b + 1; } // > 0
 };
 
 /* Usage:
-    StrComparator<num> h1(n, s);
-    h1.substr(i, len);
+	StrComparator<num> h1(n, s);
+	h1.substr(i, len);
 */
 template <class hash_t>
 struct StrComparator {
-    static const int P;
-    static vector<hash_t> deg;
+	static const int P;
+	static vector<hash_t> deg;
 
-    int n;
-    string s;
-    hash_t *h;
+	int n;
+	string s;
+	hash_t *h;
 
-    StrComparator( int nn, string ss ) : n(nn), s(ss) {
-        h = new hash_t[n + 1];
-        h[0] = 0;
-        for(int i = 0; i < n; i++)
-            h[i + 1] = h[i] * P + s[i];
-        deg.reserve(n);
-        while (sz(deg) <= n)
-            deg.push_back(*deg.rbegin() * P);
-    }
+	StrComparator( int nn, string ss ) : n(nn), s(ss) {
+		h = new hash_t[n + 1];
+		h[0] = 0;
+		for(int i = 0; i < n; i++)
+			h[i + 1] = h[i] * P + s[i];
+		deg.reserve(n);
+		while (sz(deg) <= n)
+			deg.push_back(*deg.rbegin() * P);
+	}
 
-    hash_t substr( int i, int len ) const { return h[i + len] - h[i] * deg[len]; }
+	hash_t substr( int i, int len ) const { return h[i + len] - h[i] * deg[len]; }
 };
 template <class hash_t> vector <hash_t> StrComparator<hash_t>::deg(1, hash_t(1));
 template <class hash_t> const int StrComparator<hash_t>::P = max(239, rand());
@@ -1886,18 +1967,18 @@ template <class hash_t> const int StrComparator<hash_t>::P = max(239, rand());
 7.2 Z-function
 
 vector<int> z_function(string s) {
-    int n = s.size();
-    vector<int> z(n);
-    int l = 0, r = 0;
-    for(int i = 1; i < n; i++) {
-        if(i < r)
-            z[i] = min(r - i, z[i - l]);
-        while(i + z[i] < n && s[z[i]] == s[i + z[i]])
-            z[i]++;
-        if(i + z[i] > r)
-            l = i, r = i + z[i];
-    }
-    return z;
+	int n = s.size();
+	vector<int> z(n);
+	int l = 0, r = 0;
+	for(int i = 1; i < n; i++) {
+		if(i < r)
+			z[i] = min(r - i, z[i - l]);
+		while(i + z[i] < n && s[z[i]] == s[i + z[i]])
+			z[i]++;
+		if(i + z[i] > r)
+			l = i, r = i + z[i];
+	}
+	return z;
 }
 
 ------------------------
@@ -1905,17 +1986,17 @@ vector<int> z_function(string s) {
 7.3 Prefix function
 
 vector<int> prefix_function(string s) {
-    int n = (int)s.length();
-    vector<int> pi(n);
-    for (int i = 1; i < n; i++) {
-        int j = pi[i-1];
-        while (j > 0 && s[i] != s[j])
-            j = pi[j-1];
-        if (s[i] == s[j])
-            j++;
-        pi[i] = j;
-    }
-    return pi;
+	int n = (int)s.length();
+	vector<int> pi(n);
+	for (int i = 1; i < n; i++) {
+		int j = pi[i-1];
+		while (j > 0 && s[i] != s[j])
+			j = pi[j-1];
+		if (s[i] == s[j])
+			j++;
+		pi[i] = j;
+	}
+	return pi;
 }
 
 ------------------------
@@ -1924,50 +2005,49 @@ vector<int> prefix_function(string s) {
 
 const int k = 26;
 struct Trie{
-    struct Node{
-        Node* to[k] = {0};
-        bool terminal = false;
-    };
+	struct Node{
+		Node* to[k] = {0};
+		bool terminal = false;
+	};
 
-    Node* root;
+	Node* root;
 
-    void init(){
-        root = new Node();
-    }
+	void init(){
+		root = new Node();
+	}
 
-    void add(string& s) {
-        Node* v = root;
-        for (char c : s) {
-            c -= 'a';
-            if (!v->to[c])
-                v->to[c] = new Node();
-            v = v->to[c];
-        }
-        v->terminal = true;
-    }
+	void add(string& s) {
+		Node* v = root;
+		for (char c : s) {
+			c -= 'a';
+			if (!v->to[c])
+				v->to[c] = new Node();
+			v = v->to[c];
+		}
+		v->terminal = true;
+	}
 
-    void erase(string& s) {
-        Node* v = root;
-        int fl = 1;
-        for (char c : s) {
-            c -= 'a';
-            if (!v->to[c]) {
-                fl = 0;
-                break;
-            }
-            v = v->to[c];
-        }
-        if(fl) v->terminal = false;
-    }
+	void erase(string& s) {
+		Node* v = root;
+		int fl = 1;
+		for (char c : s) {
+			c -= 'a';
+			if (!v->to[c]) {
+				fl = 0;
+				break;
+			}
+			v = v->to[c];
+		}
+		if(fl) v->terminal = false;
+	}
 
-    void build(vector<string>& a){
-        init();
-        for(auto &s : a)
-            add(s);
-    }
+	void build(vector<string>& a){
+		init();
+		for(auto &s : a)
+			add(s);
+	}
 
-    Trie(vector<string>& a){
-        build(a);
-    }
+	Trie(vector<string>& a){
+		build(a);
+	}
 };
-
