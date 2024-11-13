@@ -36,6 +36,7 @@ Contents
 	4.9 Stirling numbers
 	4.10 Formulas++
 	4.11 Pythagorean triples
+	4.12 Fibonacci numbers
 5. Data Structures
 	5.1 DSU
 	5.2 Fenwick tree
@@ -1482,6 +1483,17 @@ m, n, k - натуральные числа
 m > n
 m - n - нечётно
 gcd(m, n) = 1
+
+-----------------------------
+
+4.12 Fibonacci numbers
+
+gcd(F_n, F_n+1) = 1
+gcd(F_n, F_m) = F_gcd(n, m)
+F_nk делится на F_n
+
+	     ( 0 1 ) ^ n 
+(F_0, F_1) * ( 1 1 )      = (F_n, F_n+1)
 
 --------------------------------------------
 
